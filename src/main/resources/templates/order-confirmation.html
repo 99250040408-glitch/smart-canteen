@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Token Confirmed - KARE Smart Canteen</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <main class="container">
+        <div class="token-hero-card">
+            <div class="success-badge-icon">✓</div>
+            <h1 style="font-family:'Outfit', sans-serif; font-size: 2rem; font-weight: 800; color: var(--navy-dark); margin-bottom: 6px;">
+                Order Placed Successfully!
+            </h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+                Your order was sent to the KARE Canteen Kitchen.
+            </p>
+
+            <!-- Zomato / Swiggy Step Tracker -->
+            <div class="order-tracker">
+                <div class="tracker-step completed">
+                    <div class="tracker-dot">✓</div>
+                    <span class="tracker-label">Token Placed</span>
+                </div>
+                <div class="tracker-step active">
+                    <div class="tracker-dot">2</div>
+                    <span class="tracker-label">Kitchen Prep</span>
+                </div>
+                <div class="tracker-step">
+                    <div class="tracker-dot">3</div>
+                    <span class="tracker-label">Counter Pickup</span>
+                </div>
+            </div>
+
+            <!-- Big Glowing Token Display -->
+            <div class="token-big-display">
+                <div class="token-code" th:text="${order.token.tokenNo}">T-0001</div>
+                <p style="font-size: 0.88rem; color: #d0d5ec; margin-top: 8px;">
+                    Show this digital token at <strong>Counter 1-4</strong> when your order is called!
+                </p>
+            </div>
+
+            <!-- Itemized Receipt -->
+            <div style="background: var(--bg-light); border-radius: var(--radius-md); padding: 20px; text-align: left; margin: 24px 0; border: 1px solid var(--border-color);">
+                <div style="font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--navy-dark); margin-bottom: 14px; font-size: 1.05rem;">
+                    Order Receipt
+                </div>
+                <div th:each="item : ${order.orderItems}" style="display:flex; align-items:center; justify-content:space-between; padding: 8px 0; border-bottom: 1px dashed #e0e0e0;">
+                    <div style="display:flex; align-items:center; gap: 10px;">
+                        <img th:src="${item.foodItem.imageUrl != null ? item.foodItem.imageUrl : '/images/placeholder.jpg'}"
+                             onerror="this.onerror=null;this.src='/images/placeholder.jpg'"
+                             style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
+                        <div>
+                            <span style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);" th:text="${item.foodItem.name}"></span>
+                            <span style="color: var(--text-muted); font-size: 0.85rem;" th:text="' × ' + ${item.quantity}"></span>
+                        </div>
+                    </div>
+                    <div style="font-weight: 700; color: var(--navy-dark);" th:text="'₹' + ${#numbers.formatDecimal(item.price, 0, 2)}"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-top: 14px; font-weight: 800; font-size: 1.15rem; color: var(--navy-dark);">
+                    <span>Total Paid</span>
+                    <span th:text="'₹' + ${#numbers.formatDecimal(order.total, 0, 2)}"></span>
+                </div>
+            </div>
+
+            <div style="display:flex; gap: 12px; justify-content:center; flex-wrap:wrap;">
+                <a th:href="@{/my-orders}" class="cart-pill-btn" style="padding: 12px 28px;">
+                    Track in "My Orders" ➔
+                </a>
+                <a th:href="@{/menu}" class="logout-pill-btn" style="padding: 12px 24px;">
+                    Order More Food
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+
+    <script th:src="@{/js/app.js}"></script>
+    <script>
+        // Clear cart after checkout
+        localStorage.removeItem('cart');
+        updateCartBadge();
+    </script>
+</body>
+</html>

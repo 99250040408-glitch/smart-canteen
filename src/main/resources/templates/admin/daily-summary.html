@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Summary - Smart Canteen</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <main class="container">
+        <h1 class="page-title">Daily Summary</h1>
+
+        <div class="summary-cards">
+            <div class="summary-card">
+                <span class="summary-icon">📦</span>
+                <h2 th:text="${totalOrders}"></h2>
+                <p>Total Orders Today</p>
+            </div>
+            <div class="summary-card">
+                <span class="summary-icon">💰</span>
+                <h2>₹<span th:text="${#numbers.formatDecimal(totalRevenue, 0, 2)}"></span></h2>
+                <p>Total Revenue Today</p>
+            </div>
+        </div>
+
+        <h2 class="section-title">Today's Orders</h2>
+
+        <div th:if="${#lists.isEmpty(orders)}" class="empty-state">
+            <p>No orders placed today.</p>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(orders)}" class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Token</th>
+                        <th>Student</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="order : ${orders}">
+                        <td th:text="${order.token.tokenNo}"></td>
+                        <td th:text="${order.user.name}"></td>
+                        <td>
+                            <span th:each="item, iter : ${order.orderItems}">
+                                <span th:text="${item.foodItem.name}"></span>
+                                <span th:text="'x' + ${item.quantity}"></span>
+                                <span th:unless="${iter.last}">, </span>
+                            </span>
+                        </td>
+                        <td>₹<span th:text="${#numbers.formatDecimal(order.total, 0, 2)}"></span></td>
+                        <td>
+                            <span class="status-badge"
+                                  th:classappend="${order.status == 'PLACED' ? 'status-placed' : (order.status == 'READY' ? 'status-ready' : 'status-collected')}"
+                                  th:text="${order.status}"></span>
+                        </td>
+                        <td th:text="${#temporals.format(order.createdAt, 'hh:mm a')}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

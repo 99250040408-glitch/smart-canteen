@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Menu Management - Smart Canteen</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <main class="container">
+        <div class="page-header-row">
+            <h1 class="page-title">Menu Management</h1>
+            <a th:href="@{/admin/menu/add}" class="btn btn-primary">+ Add New Item</a>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success">
+            <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="alert alert-danger">
+            <span th:text="${error}"></span>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Category</th>
+                        <th>Available</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${foodItems}">
+                        <td>
+                            <img th:src="${item.imageUrl != null ? item.imageUrl : '/images/placeholder.jpg'}"
+                                 th:alt="${item.name}"
+                                 onerror="this.onerror=null;this.src='/images/placeholder.jpg'"
+                                 class="table-thumb">
+                        </td>
+                        <td th:text="${item.name}"></td>
+                        <td>₹<span th:text="${#numbers.formatDecimal(item.price, 0, 2)}"></span></td>
+                        <td><span class="category-badge" th:text="${item.category}"></span></td>
+                        <td>
+                            <span th:if="${item.available}" class="avail-yes">✓ Yes</span>
+                            <span th:unless="${item.available}" class="avail-no">✗ No</span>
+                        </td>
+                        <td class="action-cell">
+                            <a th:href="@{'/admin/menu/edit/' + ${item.id}}" class="btn btn-sm btn-secondary">Edit</a>
+                            <form th:action="@{'/admin/menu/toggle/' + ${item.id}}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-sm"
+                                        th:classappend="${item.available} ? 'btn-warning' : 'btn-success'"
+                                        th:text="${item.available} ? 'Disable' : 'Enable'"></button>
+                            </form>
+                            <form th:action="@{'/admin/menu/delete/' + ${item.id}}" method="post" style="display:inline;"
+                                  onsubmit="return confirm('Are you sure you want to delete this item?');">
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<!-- Navbar Fragment -->
+<nav th:fragment="navbar" class="navbar">
+    <div class="nav-container">
+        <div class="nav-brand-group">
+            <a href="/" class="nav-brand">
+                <div class="brand-icon-wrapper">
+                    🍽️
+                </div>
+                <div class="brand-text-block">
+                    <span class="brand-title">KARE Canteen</span>
+                    <span class="brand-subtitle">Cyber Security Dept</span>
+                </div>
+            </a>
+            <div class="nav-location-pill">
+                📍 <strong>Main Canteen</strong> <span>• Counter 1-4</span>
+            </div>
+        </div>
+
+        <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+            ☰
+        </button>
+
+        <div class="nav-links">
+            <span sec:authorize="hasRole('STUDENT')" style="display:flex; align-items:center; gap:8px;">
+                <a th:href="@{/menu}" class="nav-link">Menu</a>
+                <a th:href="@{/my-orders}" class="nav-link">My Orders</a>
+                <a th:href="@{/cart}" class="cart-pill-btn">
+                    <span>🛒 Cart</span>
+                    <span id="cart-badge" class="cart-badge-count">0</span>
+                </a>
+            </span>
+            <span sec:authorize="hasRole('ADMIN')" style="display:flex; align-items:center; gap:8px;">
+                <a th:href="@{/admin/dashboard}" class="nav-link">⚡ Live Orders</a>
+                <a th:href="@{/admin/menu}" class="nav-link">Menu Management</a>
+                <a th:href="@{/admin/summary}" class="nav-link">Daily Analytics</a>
+            </span>
+            <span sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post" style="display:inline;">
+                    <button type="submit" class="logout-pill-btn">Logout</button>
+                </form>
+            </span>
+        </div>
+    </div>
+</nav>
+
+<!-- Footer Fragment -->
+<footer th:fragment="footer" class="footer">
+    <div class="footer-container">
+        <div class="footer-brand">Smart Canteen Token System 🍽️</div>
+        <div class="footer-dept">Kalasalingam Academy of Research and Education &mdash; Department of CSE (Cyber Security)</div>
+        <p class="footer-sub">&copy; 2026 KARE Student Portal. High Speed Token Processing & Hygiene Certified.</p>
+    </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Menu - KARE Smart Canteen</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1f2a5c">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+</head>
+<body>
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <main class="container">
+
+        <!-- Swiggy Hero Promo Banner -->
+        <div class="hero-banner">
+            <div class="hero-content">
+                <span class="hero-tag">⚡ Fast Token System</span>
+                <h1 class="hero-title">Delicious Meals at <span>Student Prices</span></h1>
+                <p class="hero-desc">Skip the long counter crowd! Pick your South Indian favorites, generate your digital token, and collect your order when it's hot & ready.</p>
+                <div class="hero-features">
+                    <div class="hero-feature-item">🌱 100% Fresh & Pure Veg</div>
+                    <div class="hero-feature-item">⏱️ 5-10 Min Quick Prep</div>
+                    <div class="hero-feature-item">🛡️ KARE Cyber Block</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Swiggy "What's on your mind?" Category Chips -->
+        <h2 class="category-section-title">What's on your mind?</h2>
+        <div class="cuisine-chips-wrapper">
+            <a th:href="@{/menu}" class="cuisine-chip"
+               th:classappend="${selectedCategory == null || selectedCategory == 'All'} ? 'active' : ''">
+                🍽️ All Dishes
+            </a>
+            <a th:href="@{/menu(category='Breakfast')}" class="cuisine-chip"
+               th:classappend="${selectedCategory == 'Breakfast'} ? 'active' : ''">
+                🥞 Breakfast
+            </a>
+            <a th:href="@{/menu(category='Meals')}" class="cuisine-chip"
+               th:classappend="${selectedCategory == 'Meals'} ? 'active' : ''">
+                🍛 Lunch & Meals
+            </a>
+            <a th:href="@{/menu(category='Snacks')}" class="cuisine-chip"
+               th:classappend="${selectedCategory == 'Snacks'} ? 'active' : ''">
+                🥟 Hot Snacks
+            </a>
+            <a th:href="@{/menu(category='Beverages')}" class="cuisine-chip"
+               th:classappend="${selectedCategory == 'Beverages'} ? 'active' : ''">
+                ☕ Chai & Coffee
+            </a>
+        </div>
+
+        <!-- Search Bar and Count -->
+        <div class="menu-controls">
+            <form th:action="@{/menu}" method="get" class="search-bar-wrapper">
+                <span class="search-icon-inside">🔍</span>
+                <input type="text" name="search" placeholder="Search for Idli, Dosa, Biryani, Coffee..."
+                       th:value="${searchQuery}">
+            </form>
+            <div style="font-weight: 700; color: var(--text-muted); font-size: 0.95rem;">
+                Showing <span style="color: var(--navy-dark);" th:text="${#lists.size(foodItems)}"></span> items
+            </div>
+        </div>
+
+        <!-- Food Cards Grid (Swiggy / Zomato Style) -->
+        <div class="food-grid">
+            <div th:each="item : ${foodItems}" class="swiggy-food-card" 
+                 th:data-id="${item.id}"
+                 th:data-name="${item.name}" 
+                 th:data-price="${item.price}"
+                 th:data-image="${item.imageUrl}">
+                
+                <div class="food-card-img-container">
+                    <img th:src="${item.imageUrl != null ? item.imageUrl : '/images/placeholder.jpg'}"
+                         th:alt="${item.name}"
+                         onerror="this.onerror=null;this.src='/images/placeholder.jpg'"
+                         class="food-card-img">
+                    <div class="rating-pill-overlay">
+                        <span class="rating-star">★</span> 4.8
+                    </div>
+                </div>
+
+                <div class="food-card-body">
+                    <div class="food-meta-row">
+                        <!-- Veg FSSAI Symbol -->
+                        <div class="veg-indicator" title="Pure Vegetarian">
+                            <div class="veg-dot"></div>
+                        </div>
+                        <span class="food-category-pill" th:text="${item.category}"></span>
+                    </div>
+
+                    <h3 class="food-item-name" th:text="${item.name}"></h3>
+
+                    <div class="food-price-row">
+                        <div class="food-price-value">
+                            ₹<span th:text="${#numbers.formatDecimal(item.price, 0, 2)}"></span>
+                        </div>
+                        
+                        <div class="swiggy-add-btn-wrapper">
+                            <div class="stepper-mini" style="display:none;">
+                                <button class="stepper-btn" onclick="modifyCardQty(this, -1)">−</button>
+                                <input type="text" class="stepper-qty" value="1" readonly>
+                                <button class="stepper-btn" onclick="modifyCardQty(this, 1)">+</button>
+                            </div>
+                            <button class="swiggy-add-btn" onclick="addFoodItem(this)">ADD +</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(foodItems)}" class="empty-state" style="padding: 60px 20px; text-align: center;">
+            <p style="font-size: 1.3rem; font-weight: 700; color: var(--navy-dark);">No canteen items found matching your search.</p>
+            <a th:href="@{/menu}" class="cart-pill-btn" style="display:inline-flex; margin-top:16px;">View Full Menu</a>
+        </div>
+    </main>
+
+    <!-- Swiggy Floating Bottom Cart Bar -->
+    <div id="floating-cart" class="floating-cart-bar">
+        <div class="floating-cart-info">
+            <span id="float-count" class="floating-cart-count">0 ITEMS</span>
+            <span id="float-total" class="floating-cart-total">₹0.00</span>
+        </div>
+        <a th:href="@{/cart}" class="floating-cart-action">
+            <span>View Cart</span> <span>➔</span>
+        </a>
+    </div>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+
+    <div id="toast" class="toast"></div>
+
+    <script th:src="@{/js/app.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartBadge();
+            syncMenuCardButtons();
+        });
+    </script>
+</body>
+</html>

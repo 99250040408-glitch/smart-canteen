@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - KARE Smart Canteen</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #141c3a 0%, #080d20 100%);
+            padding: 24px;
+        }
+        .swiggy-auth-card {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 440px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        .demo-chip-box {
+            background: var(--bg-light);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            margin: 20px 0;
+            border: 1px dashed var(--border-color);
+            text-align: left;
+        }
+        .demo-chip-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .demo-chip-btns {
+            display: flex;
+            gap: 8px;
+        }
+        .demo-btn {
+            flex: 1;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--navy-dark);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .demo-btn:hover {
+            border-color: var(--primary-orange);
+            color: var(--primary-orange);
+            background: var(--primary-orange-light);
+        }
+        .auth-input-group {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+        .auth-label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--navy-dark);
+            margin-bottom: 6px;
+        }
+        .auth-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: var(--transition);
+        }
+        .auth-input:focus {
+            border-color: var(--primary-orange);
+            box-shadow: 0 0 0 3px rgba(252, 128, 25, 0.15);
+        }
+    </style>
+</head>
+<body class="auth-wrapper">
+    <div class="swiggy-auth-card">
+        <div class="brand-icon-wrapper" style="margin: 0 auto 16px; width: 56px; height: 56px; font-size: 1.8rem;">
+            🍽️
+        </div>
+        <h1 style="font-family:'Outfit', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--navy-dark); margin-bottom: 4px;">
+            KARE Canteen
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">
+            Dept of CSE - Cyber Security Token Portal
+        </p>
+
+        <!-- Quick 1-Click Demo Fill -->
+        <div class="demo-chip-box">
+            <div class="demo-chip-title">⚡ Quick 1-Click Demo Login:</div>
+            <div class="demo-chip-btns">
+                <button type="button" class="demo-btn" onclick="fillCreds('student@kare.edu', 'student123')">
+                    👨‍🎓 Student
+                </button>
+                <button type="button" class="demo-btn" onclick="fillCreds('admin@kare.edu', 'admin123')">
+                    👨‍🍳 Admin
+                </button>
+            </div>
+        </div>
+
+        <div th:if="${param.error}" style="background:#fee2e2; color:#b91c1c; padding:10px; border-radius:8px; font-size:0.85rem; font-weight:600; margin-bottom:16px;">
+            Invalid email or password.
+        </div>
+        <div th:if="${param.logout}" style="background:#dcfce7; color:#15803d; padding:10px; border-radius:8px; font-size:0.85rem; font-weight:600; margin-bottom:16px;">
+            You have been logged out successfully.
+        </div>
+        <div th:if="${success}" style="background:#dcfce7; color:#15803d; padding:10px; border-radius:8px; font-size:0.85rem; font-weight:600; margin-bottom:16px;">
+            <span th:text="${success}"></span>
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="auth-input-group">
+                <label class="auth-label" for="username">College Email</label>
+                <input type="email" id="username" name="username" class="auth-input" required
+                       placeholder="e.g. student@kare.edu">
+            </div>
+
+            <div class="auth-input-group">
+                <label class="auth-label" for="password">Password</label>
+                <input type="password" id="password" name="password" class="auth-input" required
+                       placeholder="Enter your password">
+            </div>
+
+            <button type="submit" class="btn-proceed-pay" style="padding: 14px; margin-top: 10px;">
+                Login to Order ➔
+            </button>
+        </form>
+
+        <p style="margin-top: 24px; font-size: 0.88rem; color: var(--text-muted);">
+            New student? <a th:href="@{/register}" style="color: var(--primary-orange); font-weight: 700;">Create Account</a>
+        </p>
+    </div>
+
+    <script>
+        function fillCreds(email, pass) {
+            document.getElementById('username').value = email;
+            document.getElementById('password').value = pass;
+        }
+    </script>
+</body>
+</html>
